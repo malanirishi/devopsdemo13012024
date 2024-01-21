@@ -19,16 +19,16 @@ pipeline {
         }
         stage('deploy') {
             when {
-                expression { params.environment == 'prod' }
+                expression { params.environment == 'production' }
             }
             steps {
-                input message: 'lets deploy to rpod with approval', ok: 'Deploy'
+                input message: 'lets deploy to prod with approval', ok: 'Deploy'
                 echo 'deploying to ${params.environment}'
             }
         }
         stage('report') {
             when {
-                expression { params.environment == 'prod' }
+                expression { params.environment == 'production' }
             }
             steps {
                 echo 'report is ${params.changelog}'
