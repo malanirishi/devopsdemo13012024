@@ -1,0 +1,40 @@
+pipeline {
+    agent none
+    parameters {
+        choice(name: 'environment',
+               choices: ['development', 'staging', 'production'],
+               description: 'Enter environment of your choice')
+        password(name: 'APIkey',
+                 defaultValue: '123ABC',
+                 description: 'please enter a valid apikey')
+        text(name: 'changelog',
+             defaultValue: 'Enter a change log and that has to be populated dynamically',
+             description: 'enter changelog')
+    }
+    stages {
+        stage('Test') {
+            agent { label 'linux' }
+            steps {
+                echo "test performed"
+            }
+        }
+        stage('deploy') {
+            when {
+                expression { params.environment == 'prod' }
+            }
+            steps {
+                input message: 'lets deploy to rpod with approval', ok: 'Deploy'
+                echo 'deploying to ${params.environment}'
+            }
+        }
+        stage('report') {
+            when {
+                expression { params.environment == 'prod' }
+            }
+            steps {
+                echo 'report is ${params.changelog}'
+                sh 'printf "\${params.changelog}\" >> ${params.environment}.txt'
+            }
+        }
+    }
+}
